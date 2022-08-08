@@ -1,7 +1,8 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter_clean_architecture/domain/entities/weather.dart';
 import 'package:flutter_clean_architecture/domain/usecases/get_current_weather.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:mockito/mockito.dart';
 import '../helpers/test_helper.mocks.dart';
 
 void main() {
@@ -13,7 +14,7 @@ void main() {
     usecase = GetCurrentWeather(mockWeatherRepository);
   });
 
- const testWeatherDetail = Weather(
+  const testWeatherDetail = Weather(
     cityName: 'Jakarta',
     main: 'Clouds',
     description: 'few clouds',
@@ -24,4 +25,15 @@ void main() {
   );
 
   const tCityName = 'Jakarta';
+
+  test("should get current weather from repository", () async {
+    when(mockWeatherRepository.getCurrentWeather(tCityName))
+        .thenAnswer((_) async => right(testWeatherDetail));
+
+    // act
+    final result = await usecase.execute(tCityName);
+
+    // assert
+    expect(result, equals(const Right(testWeatherDetail)));
+  });
 }
